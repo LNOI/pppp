@@ -1,0 +1,6 @@
+{
+    "request_time": "current_time",
+    "faiss_api_endpoint": "http://faiss.sssmarket.com:8661",
+    "shop_user_id": [],
+    "featured_post_id": []
+}

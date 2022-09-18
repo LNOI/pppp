@@ -1,0 +1,110 @@
+variables:
+  CONTAINER_IMAGE: registry.gitlab.com/sss-ai-group/sss-fashion/$CI_PROJECT_NAME
+  STABLE_IMAGE_TAG: $CI_COMMIT_REF_SLUG-latest-stable
+  ARCHIVE_IMAGE_TAG: $CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA
+  SLEEP_WHEN_START_CONTAINER: 10
+  DEV_RESOURCE_FOLDER: "/home/canhtt/fashion_server/post-score-preview/resources/*"
+
+stages: # List of stages for jobs, and their order of execution
+  - build
+  - test
+  - deploy
+
+before_script:
+  - docker info
+  - docker-compose --version
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  - echo $USER
+  - echo $(id -u)
+  - echo $(id -g)
+
+AWS-build-job: # This job runs in the build stage, which runs first.
+  variables:
+    EXPOSE_PORT: 6310
+    CONTAINER_NAME: sss_test_psp-$EXPOSE_PORT
+    IMAGE_NAME: $CONTAINER_IMAGE:$STABLE_IMAGE_TAG
+  stage: build
+  tags:
+    - Workstation
+  only:
+    - main
+    - production
+  script:
+    - rm -rf .git
+    - rm -rf .gitlab-ci.yml
+    - rm -rf .gitattributes
+
+    - cp -r $DEV_RESOURCE_FOLDER resources
+    - echo "Building the image $IMAGE_NAME ...."
+    - CURRENT_UID=$(id -u):$(id -g) docker-compose build --force-rm
+    - docker push $IMAGE_NAME
+    - docker rmi $(docker images -qf dangling=true) || true
+    - echo "Build complete."
+
+  when: on_success
+
+AWS-test-job:
+  variables:
+    EXPOSE_PORT: 6310
+    CONTAINER_NAME: sss_test_psp-$EXPOSE_PORT
+    CONFIG_SET: dev
+    IMAGE_NAME: $CONTAINER_IMAGE:$STABLE_IMAGE_TAG
+    SERVICE_NAME: ai-psp
+  stage: test
+  tags:
+    - Workstation
+  only:
+    - main
+    - production
+  script:
+    - rm -rf .git
+    - rm -rf .gitlab-ci.yml
+    - rm -rf .gitattributes
+
+    - echo "Build service $SERVICE_NAME -> container $CONTAINER_NAME from $IMAGE_NAME for testing ..."
+    - docker pull $IMAGE_NAME
+    - CURRENT_UID=$(id -u):$(id -g) docker-compose rm -s -v -f $SERVICE_NAME
+    
+    - echo $CURRENT_UID
+    - docker network create ai_service || true
+    - CURRENT_UID=$(id -u):$(id -g) docker-compose up -d --remove-orphans $SERVICE_NAME
+    
+    - sleep $SLEEP_WHEN_START_CONTAINER
+    
+    - docker logs $CONTAINER_NAME
+    - CURRENT_UID=$(id -u):$(id -g) docker-compose rm -s -v -f $SERVICE_NAME
+    - echo "Test complete."
+
+    - docker tag $IMAGE_NAME $CONTAINER_IMAGE:$ARCHIVE_IMAGE_TAG
+    - docker push $CONTAINER_IMAGE:$ARCHIVE_IMAGE_TAG
+    - docker rmi $(docker images -qf dangling=true) || true
+
+  when: on_success
+
+AWS-deploy-job:
+  variables:
+    EXPOSE_PORT: 8310
+    CONTAINER_NAME: sss_psp-$EXPOSE_PORT
+    IMAGE_NAME: $CONTAINER_IMAGE:$ARCHIVE_IMAGE_TAG
+    SERVICE_NAME: ai-psp
+  stage: deploy
+  tags:
+    - AI-GPU-Server
+  only:
+    - production
+  script:
+    - rm -rf .git
+    - rm -rf .gitlab-ci.yml
+    - rm -rf .gitattributes
+
+    - echo "Build service $SERVICE_NAME -> container $CONTAINER_NAME from $IMAGE_NAME for testing ..."
+    - docker pull $IMAGE_NAME
+    - CURRENT_UID=$(id -u):$(id -g) docker-compose rm -s -v -f $SERVICE_NAME
+    - echo $CURRENT_UID
+    - docker network create ai_service || true
+    - CURRENT_UID=$(id -u):$(id -g) docker-compose up -d --remove-orphans $SERVICE_NAME
+    - sleep $SLEEP_WHEN_START_CONTAINER
+    - docker logs $CONTAINER_NAME
+    - docker rmi $(docker images -qf dangling=true) || true
+
+  when: manual

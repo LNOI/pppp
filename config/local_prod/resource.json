@@ -1,0 +1,27 @@
+{
+    "db_engine": {
+        "method": "db_engine",
+        "args": {
+            "credential_path": "resource/db_dev_credential.json"
+        }
+    },
+    "s3_cred": {
+        "method": "load_json",
+        "args": {
+            "file_path": "resource/s3_credential.json"
+        }
+    },
+    "s3_2nd_cred": {
+        "method": "load_json",
+        "args": {
+            "file_path": "resource/secondary_s3_credential.json"
+        }
+    },
+    "redis_conn": {
+        "method": "redis_connection",
+        "args": {
+            "host": "localhost",
+            "port": 6479
+        }
+    }
+}

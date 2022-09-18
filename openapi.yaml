@@ -1,0 +1,174 @@
+openapi: '3.0.2'
+info:
+  title: Fitin recsys APIs
+  description: Recommend fashion post for user
+  version: '0.3'
+  contact: 
+    name: Thinh (maintainer)
+    email: ducthinh.nguyen2015@ict.jvn.edu.vn
+servers:
+  - url: http://ai.sssmarket.com:8670/
+    description: development server. AWS EC2.
+paths:
+  /watch_next:
+    post:
+      summary: return list of recommended post id for user to watch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user_id
+              - no_watch_next
+              properties:
+                user_id:
+                  description: user id
+                  type: integer
+                no_watch_next:
+                  description: number of returned post id
+                  type: integer
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                type: array
+                description: list of recommended posts, ordered by recommendation score in descending order.
+                items:
+                  type: integer
+        '400':
+          description: request failed, input error
+          content:
+            application/json:
+              schema:
+                type: array
+                description: list of featured recommended posts as failback.
+                items:
+                  type: integer
+        '500':
+          description: request failed, server error
+          content:
+            application/json:
+              schema:
+                type: array
+                description: list of featured recommended posts as failback.
+                items:
+                  type: integer
+        
+  /post_encoding:
+    post:
+      summary: request preprocess of post infomation. If the post is already preprocessed, overwrite the old preprocess result
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: list of post ids
+              items:
+                type: integer
+      responses:
+        '200':
+          description: report request success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success_encode:
+                    type: array
+                    description: ids of successfully encoded post
+                    items:
+                      type: integer
+                  failed_encode:
+                    type: array
+                    description: ids of post that fail the encode process
+                    items:
+                      type: integer
+        '400':
+          description: bad input (incorrect format)
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /popular_keyword:
+    post:
+      summary: get popular keywords and their sample image
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number_of_keyword:
+                  type: integer
+      response:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                type: array
+                description: list of keyword-url object
+                items:
+                  type: object
+                  properties:
+                    keyword:
+                      type: string
+                    image_url:
+                      type: string
+
+
+  /popular_hashtag:
+    post:
+      summary: get popular hashtag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number_of_hashtag:
+                  type: integer
+      response:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                type: array
+                description: list of hashtag
+                items:
+                  type: string
+  /delete_post_cache:
+    post:
+      summary: delete post with id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                post_ids:
+                  type: array
+                  description: ids of delete post
+                    items:
+                      type: integer
+                save_after_delete:
+                  type: boolean
+                  description: save index with deleted entries after delete or not
+      response:
+        '200':
+          description: request success
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: bad input (incorrect format)
+          content:
+            text/plain:
+              schema:
+                type: string

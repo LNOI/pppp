@@ -1,0 +1,29 @@
+version: '2.3'
+
+services:
+  ai-psp:
+    image: $IMAGE_NAME
+    container_name: $CONTAINER_NAME
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - $EXPOSE_PORT:$EXPOSE_PORT
+    environment:
+      - APP_MODULE=app:app
+      - WORKERS_PER_CORE=4
+      - MAX_WORKERS=6
+      - HOST=0.0.0.0
+      - PORT=$EXPOSE_PORT
+      - LOG_LEVEL=debug
+    volumes:
+      - /home/ubuntu/central_log/psp:/app/logs
+    networks:
+      ai_service:
+        aliases:
+          - ai_psp_
+    restart: always
+
+networks:
+    ai_service:
+      external: true

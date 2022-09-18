@@ -1,0 +1,120 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "simple": {
+            "format": "Log entry start: %(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        },
+        "time-thread": {
+            "format": "Log entry start: %(asctime)s - %(thread)d - %(levelname)s - %(message)s"
+        }
+    },
+    "handlers": {
+        "api_io_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "filename": "log/api_io_log.txt",
+            "maxBytes": 51200000,
+            "backupCount": 100,
+            "encoding": "utf-8"
+        },
+        "info_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "filename": "log/log.txt",
+            "maxBytes": 51200000,
+            "backupCount": 100,
+            "encoding": "utf-8"
+        },
+        "utils_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "filename": "log/utils_log.txt",
+            "maxBytes": 51200000,
+            "backupCount": 100,
+            "encoding": "utf-8"
+        },
+        "deviation_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "filename": "log/deviation_log.txt",
+            "maxBytes": 51200000,
+            "backupCount": 100,
+            "encoding": "utf-8"
+        },
+        "error_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "filename": "log/error_log.txt",
+            "maxBytes": 51200000,
+            "backupCount": 100,
+            "encoding": "utf-8"
+        },
+        "time_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "time-thread",
+            "filename": "log/time_log.txt",
+            "maxBytes": 51200000,
+            "backupCount": 100,
+            "encoding": "utf-8"
+        },
+        "total_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "simple",
+            "filename": "log/total_log.txt",
+            "maxBytes": 51200000,
+            "backupCount": 100,
+            "encoding": "utf-8"
+        }
+    },
+    "loggers": {
+        "app_logger": {
+            "level": "DEBUG",
+            "handlers": [
+                "api_io_file",
+                "total_file"
+            ]
+        },
+        "work_logger": {
+            "level": "DEBUG",
+            "handlers": [
+                "info_file",
+                "total_file"
+            ]
+        },
+        "utils_logger": {
+            "level": "DEBUG",
+            "handlers": [
+                "utils_file",
+                "total_file"
+            ]
+        },
+        "deviation_logger": {
+            "level": "DEBUG",
+            "handlers": [
+                "deviation_file",
+                "total_file"
+            ]
+        },
+        "error_logger": {
+            "level": "DEBUG",
+            "handlers": [
+                "error_file",
+                "total_file"
+            ]
+        },
+        "time_logger": {
+            "level": "DEBUG",
+            "handlers": [
+                "time_file"
+            ]
+        }
+    }
+}

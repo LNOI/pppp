@@ -1,0 +1,29 @@
+# Not ignore files
+!config/
+!requirementx.txt
+
+# Ignore files
+*.tar
+*.bin
+*.pkl
+*.jpg
+*.png
+
+*.txt
+!requirements.txt
+
+# Python cache and AI model, notebook
+resource/*.json
+*.pt
+*.pth
+**/__pycache__/
+__pycache__/
+.vscode/
+**/.ipynb_checkpoints/
+.ipynb_checkpoints/
+*.ipynb
+**/*.ipynb
+log/*.txt
+*.index
+
+

@@ -1,0 +1,50 @@
+{    "fastapi_app":{
+        "method":"fastapi_app",
+        "args":{}
+    },
+    "placeholder_post_ids": {
+        "method": "load_json",
+        "args": {
+            "file_path": "resource/valid_ids.json"
+        }
+    },
+    "firebase_db_client": {
+        "method": "firebase_db_client",
+        "args": {
+            "cred_path": "resource/firebase_credential.json"
+        }
+    },
+    "solr_search_client": {
+        "method": "solr_search_client",
+        "args": {
+            "host": "http://solr.sssmarket.com",
+            "port": "8983",
+            "core_name": "sssmarket"
+        }
+    },
+    "db_engine": {
+        "method": "db_engine",
+        "args": {
+            "credential_path": "resource/db_dev_credential.json"
+        }
+    },
+    "s3_cred": {
+        "method": "load_json",
+        "args": {
+            "file_path": "resource/s3_dev_credential.json"
+        }
+    },
+    "secondary_s3_cred": {
+        "method": "load_json",
+        "args": {
+            "file_path": "resource/secondary_s3_credential.json"
+        }
+    },
+    "redis_conn": {
+        "method": "redis_connection",
+        "args": {
+            "host": "test_redis_cache",
+            "port": 6379
+        }
+    }
+}
